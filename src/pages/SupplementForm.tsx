@@ -12,7 +12,8 @@ import {
   type Supplement,
 } from '../lib/supplements'
 import { suggestNames } from '../lib/suggestions'
-import { CUSTOM_UNIT, DOSE_AMOUNTS, DOSE_UNITS, HOURS, MINUTES, formatDose, parseDose, splitTime } from '../lib/dose'
+import { TimeSheet } from '../components/TimeSheet'
+import { CUSTOM_UNIT, DOSE_AMOUNTS, DOSE_UNITS, formatDose, parseDose } from '../lib/dose'
 
 interface Props {
   supplement: Supplement | null // null 代表新增
@@ -29,6 +30,9 @@ export function SupplementForm({ supplement, onDone, onCancel }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  // 選好名稱後收起建議，再打字時重新出現
+  const [namePicked, setNamePicked] = useState(supplement !== null)
+  const [editingSlot, setEditingSlot] = useState<SlotId | null>(null)
 
   function toggleSlot(id: SlotId, defaultTime: string) {
     setError(null)
@@ -68,15 +72,8 @@ export function SupplementForm({ supplement, onDone, onCancel }: Props) {
   }
 
   const count = Object.keys(times).length
-  const suggestions = suggestNames(name)
-
-  function setTimePart(id: SlotId, part: 'hour' | 'minute', value: string) {
-    setTimes((prev) => {
-      const current = splitTime(prev[id] ?? '')
-      const next = { ...current, [part]: value }
-      return { ...prev, [id]: `${next.hour}:${next.minute}` }
-    })
-  }
+  const suggestions = namePicked ? [] : suggestNames(name)
+  const editing = SLOTS.find((x) => x.id === editingSlot)
 
   return (
     <main className="page">
@@ -96,18 +93,24 @@ export function SupplementForm({ supplement, onDone, onCancel }: Props) {
           autoComplete="off"
           placeholder="打幾個字找找看，例如 維生素"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value)
+            setNamePicked(false)
+          }}
         />
+        {!namePicked && <p className="hint">{name.trim() ? (suggestions.length > 0 ? '點一下選擇：' : '清單裡沒有這一項，直接用你輸入的名稱就可以。') : '常見的保健食品：'}</p>}
         {suggestions.length > 0 && (
           <div className="suggest" role="listbox" aria-label="名稱建議">
             {suggestions.map((s) => (
-              <button key={s} type="button" role="option" aria-selected={false} className="chip" onClick={() => setName(s)}>
+              <button key={s} type="button" role="option" aria-selected={false} className="chip" onClick={() => {
+                setName(s)
+                setNamePicked(true)
+              }}>
                 {s}
               </button>
             ))}
           </div>
         )}
-        <p className="hint">點選建議，或直接輸入你自己的名稱。</p>
 
         <label htmlFor="sup-unit">每次份量</label>
         <div className="pair">
@@ -154,23 +157,9 @@ export function SupplementForm({ supplement, onDone, onCancel }: Props) {
                   <span>{s.label}</span>
                 </label>
                 {on && (
-                  <span className="time-pick">
-                    <select aria-label={`${s.label}的小時`} value={splitTime(times[s.id] ?? '').hour} onChange={(e) => setTimePart(s.id, 'hour', e.target.value)}>
-                      {HOURS.map((h) => (
-                        <option key={h} value={h}>
-                          {h}
-                        </option>
-                      ))}
-                    </select>
-                    <span aria-hidden="true">:</span>
-                    <select aria-label={`${s.label}的分鐘`} value={splitTime(times[s.id] ?? '').minute} onChange={(e) => setTimePart(s.id, 'minute', e.target.value)}>
-                      {MINUTES.map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </span>
+                  <button type="button" className="time-btn" aria-label={`${s.label}的提醒時間 ${times[s.id]}，點一下修改`} onClick={() => setEditingSlot(s.id)}>
+                    {times[s.id]}
+                  </button>
                 )}
               </div>
             )
@@ -188,6 +177,18 @@ export function SupplementForm({ supplement, onDone, onCancel }: Props) {
           {busy ? '儲存中…' : '儲存'}
         </button>
       </form>
+
+      {editing && (
+        <TimeSheet
+          title={`${editing.label}的提醒時間`}
+          value={times[editing.id] ?? editing.defaultTime}
+          onDone={(value) => {
+            setTimes((prev) => ({ ...prev, [editing.id]: value }))
+            setEditingSlot(null)
+          }}
+          onCancel={() => setEditingSlot(null)}
+        />
+      )}
 
       {supplement &&
         (confirmingDelete ? (

@@ -55,15 +55,28 @@ function norm(s: string): string {
 
 const INDEX = ITEMS.map(([name, aliases]) => ({ name, keys: [name, ...aliases].map(norm) }))
 
-export function suggestNames(typed: string, limit = 6): string[] {
+// 還沒打字時先顯示的常見品項
+const POPULAR = ['綜合維生素', '維生素 B 群', '維生素 C', '維生素 D', '鈣', '魚油', '益生菌', '葉黃素']
+
+export function isExactName(typed: string): boolean {
   const q = norm(typed)
-  if (!q) return []
+  return INDEX.some((item) => norm(item.name) === q)
+}
+
+// 打的字完全符合的排最前面，再來是開頭符合、其他符合。
+// 完全符合也要顯示，使用者才知道清單裡有這一項（例如只打一個「鎂」字）。
+export function suggestNames(typed: string, limit = 8): string[] {
+  const q = norm(typed)
+  if (!q) return POPULAR
+  // 英文字只比對開頭，不然打一個 m 會跑出一堆不相關的
+  const asciiOnly = /^[\x00-\x7f]+$/.test(q)
+  const exact: string[] = []
   const starts: string[] = []
   const contains: string[] = []
   for (const item of INDEX) {
-    if (norm(item.name) === q) continue // 已經完全一樣就不用再建議
-    if (item.keys.some((k) => k.startsWith(q))) starts.push(item.name)
-    else if (item.keys.some((k) => k.includes(q))) contains.push(item.name)
+    if (norm(item.name) === q) exact.push(item.name)
+    else if (item.keys.some((k) => k.startsWith(q))) starts.push(item.name)
+    else if (!asciiOnly && item.keys.some((k) => k.includes(q))) contains.push(item.name)
   }
-  return [...starts, ...contains].slice(0, limit)
+  return [...exact, ...starts, ...contains].slice(0, limit)
 }

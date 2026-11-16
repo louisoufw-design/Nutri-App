@@ -9,11 +9,12 @@ interface Props {
   done: Set<string> // checkinKey 的集合，涵蓋本週
   onToggle: (supplementId: string, slot: SlotId) => void
   onAdd: () => void
+  onRemind: () => void
 }
 
 const WEEK_LABELS = ['一', '二', '三', '四', '五', '六', '日']
 
-export function TodayView({ account, items, done, onToggle, onAdd }: Props) {
+export function TodayView({ account, items, done, onToggle, onAdd, onRemind }: Props) {
   const today = localDay()
   const rows = useMemo(
     () =>
@@ -106,6 +107,11 @@ export function TodayView({ account, items, done, onToggle, onAdd }: Props) {
       )}
 
       {total > 0 && <p className="hint center">吃了就點一下打卡，點錯再點一次可以取消。</p>}
+      {total > 0 && (
+        <button type="button" className="link center-btn" onClick={onRemind}>
+          設定手機行事曆提醒
+        </button>
+      )}
     </>
   )
 }

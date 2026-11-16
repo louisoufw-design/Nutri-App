@@ -7,6 +7,7 @@ import { addCheckin, checkinKey, listCheckins, localDay, removeCheckin, weekDays
 import { Lizard } from '../components/Lizard'
 import { SupplementForm } from './SupplementForm'
 import { TodayView } from './TodayView'
+import { ReminderCard } from '../components/ReminderCard'
 
 type Tab = 'today' | 'mine'
 type View = { kind: 'tabs' } | { kind: 'form'; supplement: Supplement | null }
@@ -101,7 +102,7 @@ export function HomePage({ session }: { session: Session }) {
       {items === null && !error && <p className="sub center">載入中…</p>}
 
       {items !== null && tab === 'today' && (
-        <TodayView account={account} items={items} done={done} onToggle={(id, slot) => void toggleCheckin(id, slot)} onAdd={openNew} />
+        <TodayView account={account} items={items} done={done} onToggle={(id, slot) => void toggleCheckin(id, slot)} onAdd={openNew} onRemind={() => setTab('mine')} />
       )}
 
       {items !== null && tab === 'mine' && (
@@ -140,6 +141,8 @@ export function HomePage({ session }: { session: Session }) {
           <button type="button" className="primary" onClick={openNew}>
             ＋ 新增保健食品
           </button>
+
+          <ReminderCard items={items} />
 
           <button className="link signout" type="button" onClick={handleSignOut} disabled={signingOut}>
             {signingOut ? '登出中…' : '登出'}

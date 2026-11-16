@@ -101,3 +101,26 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.3; }
 .nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 6px; background: var(--card); border-top: 1px solid var(--line); padding: 8px max(12px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
 .nav-btn { flex: 1; max-width: 214px; border: 0; background: transparent; font: inherit; font-weight: 700; color: var(--muted); padding: 10px; border-radius: 999px; cursor: pointer; min-height: 48px; }
 .nav-btn.on { background: #fff3c4; color: var(--ink); }
+
+/* 時間滾輪 */
+.time-btn { flex: none; border: 1.5px solid var(--teal); background: #fff; color: var(--ink); font: inherit; font-weight: 800; font-variant-numeric: tabular-nums; padding: 6px 16px; border-radius: 10px; min-height: 40px; cursor: pointer; }
+.sheet-back { position: fixed; inset: 0; background: rgba(35, 51, 31, .45); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+.sheet { width: 100%; max-width: 440px; background: var(--card); border-radius: 24px 24px 0 0; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; }
+.sheet-title { margin: 0; font-weight: 800; font-size: 1.1rem; text-align: center; }
+.wheels { position: relative; display: flex; justify-content: center; align-items: center; gap: 6px; height: 220px; }
+.wheel-band { position: absolute; left: 12%; right: 12%; top: 88px; height: 44px; border-radius: 12px; background: #fff3c4; pointer-events: none; }
+.wheel { position: relative; height: 220px; width: 96px; overflow-y: scroll; scroll-snap-type: y mandatory; padding: 88px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.wheel::-webkit-scrollbar { display: none; }
+.wheel-item { display: block; width: 100%; height: 44px; border: 0; background: transparent; font: inherit; font-size: 1.35rem; font-variant-numeric: tabular-nums; color: var(--muted); scroll-snap-align: center; cursor: pointer; padding: 0; }
+.wheel-item.on { color: var(--ink); font-weight: 800; }
+.wheel-colon { position: relative; font-size: 1.35rem; font-weight: 800; }
+.sheet-ok { margin: 0; flex: 2; }
+
+/* 功能 4：提醒 */
+.remind { display: flex; flex-direction: column; gap: 10px; }
+.remind h2 { margin: 0; font-size: 1.1rem; font-weight: 800; }
+.as-link { display: block; text-align: center; text-decoration: none; margin: 0; }
+.howto { border-top: 1px solid var(--line); padding-top: 10px; }
+.howto summary { font-weight: 700; color: var(--teal); cursor: pointer; min-height: 36px; }
+.howto ol { margin: 8px 0; padding-left: 1.4em; font-size: .92rem; }
+.center-btn { align-self: center; }
