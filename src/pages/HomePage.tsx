@@ -8,6 +8,7 @@ import { Lizard } from '../components/Lizard'
 import { SupplementForm } from './SupplementForm'
 import { TodayView } from './TodayView'
 import { ReminderCard } from '../components/ReminderCard'
+import { FeedbackCard } from '../components/FeedbackCard'
 
 type Tab = 'today' | 'mine'
 type View = { kind: 'tabs' } | { kind: 'form'; supplement: Supplement | null }
@@ -143,6 +144,8 @@ export function HomePage({ session }: { session: Session }) {
           </button>
 
           <ReminderCard items={items} />
+
+          <FeedbackCard />
 
           <button className="link signout" type="button" onClick={handleSignOut} disabled={signingOut}>
             {signingOut ? '登出中…' : '登出'}

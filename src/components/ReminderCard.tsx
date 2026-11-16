@@ -21,9 +21,20 @@ export function ReminderCard({ items }: { items: Supplement[] }) {
           <a className="primary as-link" href={href} target={standalone ? '_blank' : undefined} rel="noopener">
             加入手機行事曆
           </a>
-          <p className="hint">按下後選「加入全部」。之後改了時間或品項，請再按一次；用不到的舊提醒要到行事曆裡刪除。</p>
+          <p className="hint">按下後選「加入全部」。之後改了時間或品項，請再按一次。</p>
         </>
       )}
+
+      <details className="howto">
+        <summary>怎麼更改或刪除提醒</summary>
+        <p className="hint">提醒是存在你手機的行事曆裡，這個網站沒辦法替你刪除，需要到行事曆操作：</p>
+        <ol>
+          <li>打開手機的「行事曆」，點任何一天裡的「吃保健食品」。</li>
+          <li>點最下面的「刪除行程」。</li>
+          <li>選「刪除所有未來行程」，這個時間就不會再提醒。只選「僅刪除此行程」的話，只有當天不提醒。</li>
+        </ol>
+        <p className="hint">改了吃的時間：先照上面刪掉舊時間的提醒，再回來按一次「加入手機行事曆」。時間沒變的提醒不會重複。</p>
+      </details>
 
       {!standalone && (
         <details className="howto">
